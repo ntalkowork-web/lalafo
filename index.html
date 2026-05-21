@@ -4,56 +4,975 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lalafo — Add Advertisement Flow</title>
-  <link rel="stylesheet" href="assets/colors_and_type.css" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&family=Caveat:wght@700&display=swap" rel="stylesheet" />
+
   <style>
-    * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; min-height: 100%; background: #F0F2F7; font-family: 'Ubuntu', sans-serif; -webkit-font-smoothing: antialiased; }
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; min-height: 100%; background: #F0F2F7;
+      font-family: 'Ubuntu', sans-serif; -webkit-font-smoothing: antialiased; }
     button { font-family: inherit; }
-    input, textarea { font-family: inherit; }
+    input, textarea, select { font-family: inherit; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    /* Hide scrollbars inside the phone screen for a cleaner look */
     .phone-scroll::-webkit-scrollbar { display: none; }
+
+    /* ── Lalafo Design System — CSS tokens ── */
+    :root {
+      --color-constant-white: #FFFFFF;
+      --color-constant-black: #141417;
+      --color-brand-green:        #22CA46;
+      --color-brand-green-hover:  #43D262;
+      --color-brand-pink:         #FF2366;
+      --color-brand-pink-hover:   #FF447D;
+      --color-brand-dark-blue:    #0B78E3;
+      --color-brand-dark-blue-hover: #2C8BF0;
+      --color-grey-900: #0A1331;
+      --color-grey-800: #737D9B;
+      --color-grey-700: #A1A8BD;
+      --color-grey-600: #D9DDE7;
+      --color-grey-500: #F0F2F7;
+      --color-grey-400: #F7F8FB;
+      --color-grey-300: #FFFFFF;
+      --color-purple-500: #6C4AE9;
+      --color-purple-200: #DCC9F8;
+      --color-purple-100: #F3EDFC;
+      --color-dark-blue-500: #0B78E3;
+      --color-dark-blue-200: #B5D6F6;
+      --color-dark-blue-100: #E6F1FC;
+      --color-blue-500: #15B2F1;
+      --color-blue-200: #B8E7FA;
+      --color-blue-100: #E7F7FD;
+      --color-mint-green-500: #11BC91;
+      --color-mint-green-200: #B7EADE;
+      --color-mint-green-100: #E7F8F4;
+      --color-grass-green-500: #7ED321;
+      --color-grass-green-200: #D9F2BD;
+      --color-grass-green-100: #E8F9EC;
+      --color-yellow-500: #FFC620;
+      --color-yellow-200: #FFEEBB;
+      --color-yellow-100: #FFFAE9;
+      --color-orange-500: #FF5A00;
+      --color-orange-200: #FFCDB2;
+      --color-orange-100: #FFEEE5;
+      --color-red-500: #EE374F;
+      --color-red-200: #FFBDD1;
+      --color-red-100: #FFE9EF;
+      --color-barbie-pink-500: #FD51D9;
+      --color-barbie-pink-200: #FECAF3;
+      --color-barbie-pink-100: #FEEDFB;
+      --color-opacity-green-500: rgba(34,202,70,.50);
+      --color-opacity-green-200: rgba(34,202,70,.20);
+      --color-opacity-green-100: rgba(34,202,70,.10);
+      --color-opacity-dark-800:  rgba(10,19,49,.80);
+      --color-opacity-dark-700:  rgba(10,19,49,.70);
+      --color-opacity-dark-500:  rgba(10,19,49,.50);
+      --color-opacity-dark-300:  rgba(10,19,49,.30);
+      --color-opacity-dark-150:  rgba(10,19,49,.15);
+      --color-opacity-white-500: rgba(255,255,255,.50);
+      --color-opacity-white-400: rgba(255,255,255,.40);
+      --color-opacity-white-300: rgba(255,255,255,.30);
+      --color-opacity-white-200: rgba(255,255,255,.20);
+      --color-opacity-white-100: rgba(255,255,255,.10);
+      --color-opacity-red-500:   rgba(238,55,79,.50);
+      --color-opacity-red-200:   rgba(238,55,79,.20);
+      --color-opacity-red-100:   rgba(238,55,79,.10);
+      --color-opacity-blue-200:  rgba(11,120,227,.20);
+      --color-opacity-blue-100:  rgba(11,120,227,.10);
+
+      --bg-grey:   var(--color-grey-500);
+      --bg-white:  var(--color-grey-300);
+      --surface-default:   var(--color-grey-300);
+      --surface-elevated:  var(--color-grey-300);
+      --surface-hover:     var(--color-grey-500);
+      --surface-disabled:  var(--color-grey-500);
+      --surface-grey:      var(--color-grey-500);
+      --surface-grey-hover:var(--color-grey-600);
+      --surface-green:     var(--color-brand-green);
+      --surface-green-hover: var(--color-brand-green-hover);
+      --surface-blue:      var(--color-brand-dark-blue);
+      --surface-blue-hover:var(--color-brand-dark-blue-hover);
+      --surface-pink:      var(--color-brand-pink);
+      --surface-pink-hover:var(--color-brand-pink-hover);
+      --surface-red:       var(--color-red-500);
+      --surface-purple:    var(--color-purple-500);
+
+      --text-primary:   var(--color-grey-900);
+      --text-secondary: var(--color-grey-800);
+      --text-disabled:  var(--color-grey-700);
+      --text-invert:    var(--color-grey-300);
+      --text-brand:     var(--color-brand-green);
+      --text-brand-hover: var(--color-brand-green-hover);
+      --text-blue:      var(--color-brand-dark-blue);
+      --text-blue-hover:var(--color-brand-dark-blue-hover);
+      --text-pink:      var(--color-brand-pink);
+      --text-pink-hover:var(--color-brand-pink-hover);
+      --text-error:     var(--color-red-500);
+
+      --border-primary:   var(--color-grey-600);
+      --border-secondary: var(--color-grey-500);
+      --border-brand:     var(--color-brand-green);
+      --border-blue:      var(--color-dark-blue-500);
+      --border-pink:      var(--color-brand-pink);
+      --border-red:       var(--color-red-500);
+      --border-white:     var(--color-grey-300);
+
+      --shadow-xxs: 0 1px 2px rgba(0,0,0,.50);
+      --shadow-xs:  0 4px 8px rgba(10,19,49,.20);
+      --shadow-s:   0 4px 15px rgba(10,19,49,.12);
+      --shadow-m:   0 8px 24px rgba(10,19,49,.12);
+      --shadow-l:   0 12px 32px rgba(10,19,49,.08);
+      --shadow-header: 0 2px 4px rgba(10,19,49,.07);
+
+      --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px;
+      --space-5:20px; --space-6:24px; --space-7:28px; --space-8:32px;
+      --space-9:36px; --space-10:40px; --space-12:48px; --space-14:56px;
+      --space-16:64px; --space-20:80px; --space-24:96px; --space-32:128px;
+      --space-mobile-gutter:var(--space-4);
+      --space-web-gutter:var(--space-6);
+      --space-card-padding:var(--space-4);
+      --space-touch-min:44px;
+
+      --radius-xs:4px; --radius-sm:8px; --radius-md:12px; --radius-lg:16px;
+      --radius-xl:24px; --radius-pill:9999px; --radius-full:50%;
+      --radius-button:var(--radius-xl);
+      --radius-card:var(--radius-md);
+      --radius-input:var(--radius-sm);
+      --radius-tag:var(--radius-pill);
+      --radius-modal:var(--radius-md);
+      --radius-bottom-sheet:var(--radius-xl);
+
+      --font-primary:'Ubuntu',sans-serif;
+      --font-accent:'Caveat',cursive;
+      --font-weight-regular:400;
+      --font-weight-medium:500;
+      --font-weight-bold:700;
+      --line-height-base:1.5;
+    }
   </style>
 
+  <!-- React + Babel -->
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
-  <template id="__bundler_thumbnail" data-bg-color="#F0F2F7">
-    <svg viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
-      <!-- Phone frame -->
-      <rect x="80" y="40" width="240" height="520" rx="36" fill="#fff" stroke="#D9DDE7" stroke-width="2"/>
-      <!-- Status bar notch -->
-      <rect x="150" y="52" width="100" height="22" rx="11" fill="#0A1331"/>
-      <!-- NavBar -->
-      <rect x="80" y="74" width="240" height="44" fill="#fff"/>
-      <rect x="80" y="117" width="240" height="1" fill="#F0F2F7"/>
-      <text x="200" y="102" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="600" fill="#0A1331">Ad publication</text>
-      <!-- Segment control -->
-      <rect x="96" y="127" width="208" height="36" rx="8" fill="#F0F2F7"/>
-      <rect x="99" y="130" width="100" height="30" rx="7" fill="#fff"/>
-      <text x="149" y="150" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#0A1331">Single</text>
-      <text x="254" y="150" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#737D9B">Multiple</text>
-      <!-- Photo grid -->
-      <rect x="96" y="175" width="60" height="60" rx="6" fill="#F0F2F7"/>
-      <rect x="160" y="175" width="42" height="60" rx="6" fill="#F0F2F7"/>
-      <rect x="206" y="175" width="42" height="60" rx="6" fill="#F0F2F7"/>
-      <rect x="252" y="175" width="44" height="60" rx="6" fill="#F0F2F7"/>
-      <!-- CTA button -->
-      <rect x="96" y="510" width="208" height="44" rx="22" fill="#22CA46"/>
-      <text x="200" y="538" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="600" fill="#fff">Create ad with AI</text>
-      <!-- Home indicator -->
-      <rect x="162" y="543" width="76" height="4" rx="2" fill="#0A1331" opacity="0.7"/>
-    </svg>
-  </template>
 </head>
 <body>
   <div id="root"></div>
 
-  <script type="text/babel" src="tweaks-panel.jsx"></script>
-  <script type="text/babel" src="screens-shared.jsx"></script>
-  <script type="text/babel" src="screens-photo.jsx"></script>
-  <script type="text/babel" src="screens-form.jsx"></script>
-  <script type="text/babel" src="screens-promo.jsx"></script>
-  <script type="text/babel" src="app.jsx"></script>
+  <!-- ─── tweaks-panel ─────────────────────────────────────────────── -->
+  <script type="text/babel">
+const __TWEAKS_STYLE = `
+  .twk-panel{position:fixed;right:16px;bottom:16px;z-index:2147483646;width:280px;
+    max-height:calc(100vh - 32px);display:flex;flex-direction:column;
+    transform:scale(var(--dc-inv-zoom,1));transform-origin:bottom right;
+    background:rgba(250,249,247,.78);color:#29261b;
+    -webkit-backdrop-filter:blur(24px) saturate(160%);backdrop-filter:blur(24px) saturate(160%);
+    border:.5px solid rgba(255,255,255,.6);border-radius:14px;
+    box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 12px 40px rgba(0,0,0,.18);
+    font:11.5px/1.4 ui-sans-serif,system-ui,-apple-system,sans-serif;overflow:hidden}
+  .twk-hd{display:flex;align-items:center;justify-content:space-between;
+    padding:10px 8px 10px 14px;cursor:move;user-select:none}
+  .twk-hd b{font-size:12px;font-weight:600;letter-spacing:.01em}
+  .twk-x{appearance:none;border:0;background:transparent;color:rgba(41,38,27,.55);
+    width:22px;height:22px;border-radius:6px;cursor:default;font-size:13px;line-height:1}
+  .twk-x:hover{background:rgba(0,0,0,.06);color:#29261b}
+  .twk-body{padding:2px 14px 14px;display:flex;flex-direction:column;gap:10px;
+    overflow-y:auto;overflow-x:hidden;min-height:0;
+    scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.15) transparent}
+  .twk-row{display:flex;flex-direction:column;gap:5px}
+  .twk-row-h{flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
+  .twk-lbl{display:flex;justify-content:space-between;align-items:baseline;color:rgba(41,38,27,.72)}
+  .twk-lbl>span:first-child{font-weight:500}
+  .twk-val{color:rgba(41,38,27,.5);font-variant-numeric:tabular-nums}
+  .twk-sect{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    color:rgba(41,38,27,.45);padding:10px 0 0}
+  .twk-sect:first-child{padding-top:0}
+  .twk-field{appearance:none;box-sizing:border-box;width:100%;min-width:0;height:26px;padding:0 8px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:7px;
+    background:rgba(255,255,255,.6);color:inherit;font:inherit;outline:none}
+  .twk-field:focus{border-color:rgba(0,0,0,.25);background:rgba(255,255,255,.85)}
+  .twk-slider{appearance:none;-webkit-appearance:none;width:100%;height:4px;margin:6px 0;
+    border-radius:999px;background:rgba(0,0,0,.12);outline:none}
+  .twk-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+    width:14px;height:14px;border-radius:50%;background:#fff;
+    border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+  .twk-seg{position:relative;display:flex;padding:2px;border-radius:8px;background:rgba(0,0,0,.06);user-select:none}
+  .twk-seg-thumb{position:absolute;top:2px;bottom:2px;border-radius:6px;
+    background:rgba(255,255,255,.9);box-shadow:0 1px 2px rgba(0,0,0,.12);transition:left .15s,width .15s}
+  .twk-seg button{appearance:none;position:relative;z-index:1;flex:1;border:0;
+    background:transparent;color:inherit;font:inherit;font-weight:500;min-height:22px;
+    border-radius:6px;cursor:default;padding:4px 6px;line-height:1.2}
+  .twk-toggle{position:relative;width:32px;height:18px;border:0;border-radius:999px;
+    background:rgba(0,0,0,.15);transition:background .15s;cursor:default;padding:0}
+  .twk-toggle[data-on="1"]{background:#34c759}
+  .twk-toggle i{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;
+    background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+  .twk-toggle[data-on="1"] i{transform:translateX(14px)}
+  .twk-btn{appearance:none;height:26px;padding:0 12px;border:0;border-radius:7px;
+    background:rgba(0,0,0,.78);color:#fff;font:inherit;font-weight:500;cursor:default}
+  .twk-btn:hover{background:rgba(0,0,0,.88)}
+  .twk-btn.secondary{background:rgba(0,0,0,.06);color:inherit}
+  .twk-btn.secondary:hover{background:rgba(0,0,0,.1)}
+`;
+
+function useTweaks(defaults) {
+  const [values, setValues] = React.useState(defaults);
+  const setTweak = React.useCallback((keyOrEdits, val) => {
+    const edits = typeof keyOrEdits === 'object' && keyOrEdits !== null ? keyOrEdits : { [keyOrEdits]: val };
+    setValues(prev => ({ ...prev, ...edits }));
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits }, '*');
+    window.dispatchEvent(new CustomEvent('tweakchange', { detail: edits }));
+  }, []);
+  return [values, setTweak];
+}
+
+function TweaksPanel({ title = 'Tweaks', children }) {
+  const [open, setOpen] = React.useState(false);
+  const dragRef = React.useRef(null);
+  const offsetRef = React.useRef({ x: 16, y: 16 });
+  const PAD = 16;
+  const clampToViewport = React.useCallback(() => {
+    const panel = dragRef.current;
+    if (!panel) return;
+    const w = panel.offsetWidth, h = panel.offsetHeight;
+    const maxRight = Math.max(PAD, window.innerWidth - w - PAD);
+    const maxBottom = Math.max(PAD, window.innerHeight - h - PAD);
+    offsetRef.current = {
+      x: Math.min(maxRight, Math.max(PAD, offsetRef.current.x)),
+      y: Math.min(maxBottom, Math.max(PAD, offsetRef.current.y)),
+    };
+    panel.style.right = offsetRef.current.x + 'px';
+    panel.style.bottom = offsetRef.current.y + 'px';
+  }, []);
+  React.useEffect(() => {
+    const onMsg = e => {
+      const t = e?.data?.type;
+      if (t === '__activate_edit_mode') setOpen(true);
+      else if (t === '__deactivate_edit_mode') setOpen(false);
+    };
+    window.addEventListener('message', onMsg);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', onMsg);
+  }, []);
+  React.useEffect(() => { if (open) clampToViewport(); }, [open, clampToViewport]);
+  const dismiss = () => { setOpen(false); window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*'); };
+  const onDragStart = e => {
+    const panel = dragRef.current; if (!panel) return;
+    const r = panel.getBoundingClientRect();
+    const sx = e.clientX, sy = e.clientY;
+    const startRight = window.innerWidth - r.right, startBottom = window.innerHeight - r.bottom;
+    const move = ev => { offsetRef.current = { x: startRight - (ev.clientX - sx), y: startBottom - (ev.clientY - sy) }; clampToViewport(); };
+    const up = () => { window.removeEventListener('mousemove', move); window.removeEventListener('mouseup', up); };
+    window.addEventListener('mousemove', move); window.addEventListener('mouseup', up);
+  };
+  if (!open) return null;
+  return (
+    <>
+      <style>{__TWEAKS_STYLE}</style>
+      <div ref={dragRef} className="twk-panel" style={{ right: offsetRef.current.x, bottom: offsetRef.current.y }}>
+        <div className="twk-hd" onMouseDown={onDragStart}>
+          <b>{title}</b>
+          <button className="twk-x" onMouseDown={e => e.stopPropagation()} onClick={dismiss}>✕</button>
+        </div>
+        <div className="twk-body">{children}</div>
+      </div>
+    </>
+  );
+}
+
+function TweakSection({ label, children }) {
+  return <><div className="twk-sect">{label}</div>{children}</>;
+}
+
+function TweakToggle({ label, value, onChange }) {
+  return (
+    <div className="twk-row twk-row-h">
+      <div className="twk-lbl"><span>{label}</span></div>
+      <button type="button" className="twk-toggle" data-on={value ? '1' : '0'}
+              onClick={() => onChange(!value)}><i /></button>
+    </div>
+  );
+}
+
+function TweakButton({ label, onClick, secondary = false }) {
+  return <button type="button" className={secondary ? 'twk-btn secondary' : 'twk-btn'} onClick={onClick}>{label}</button>;
+}
+
+Object.assign(window, { useTweaks, TweaksPanel, TweakSection, TweakToggle, TweakButton });
+  </script>
+
+  <!-- ─── screens-shared ───────────────────────────────────────────── -->
+  <script type="text/babel">
+const NavBar = ({ title, onClose, onBack }) => (
+  <div style={{ height:48, background:"#fff", display:"flex", alignItems:"center", padding:"0 16px", position:"relative", borderBottom:"1px solid #F0F2F7", flexShrink:0 }}>
+    <button onClick={onBack || onClose} style={{ width:32, height:32, background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", padding:0, marginLeft:-4 }} aria-label={onBack ? "Back" : "Close"}>
+      {onBack
+        ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0A1331" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0A1331" strokeWidth="2.2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>}
+    </button>
+    <span style={{ position:"absolute", left:"50%", transform:"translateX(-50%)", fontFamily:"'Ubuntu',sans-serif", fontSize:16, fontWeight:500, color:"#0A1331" }}>{title}</span>
+  </div>
+);
+
+const ProgressBar = ({ pct }) => {
+  const fillColor = pct < 50 ? "#FFC620" : "#22CA46";
+  return (
+    <div style={{ background:"#fff", padding:"8px 16px 12px", borderBottom:"1px solid #D9DDE7", flexShrink:0 }}>
+      <div style={{ display:"flex", gap:4, marginBottom:6 }}>
+        <span style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:14, color:"#0A1331" }}>Item completeness </span>
+        <span style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:14, fontWeight:500, color:"#0A1331" }}>{pct}%</span>
+      </div>
+      <div style={{ height:4, borderRadius:10, background:"#F0F2F7", overflow:"hidden" }}>
+        <div style={{ height:4, borderRadius:10, background:fillColor, width:`${pct}%`, transition:"width 0.4s, background 0.4s" }} />
+      </div>
+      <div style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:12, color:"#A1A8BD", textAlign:"center", marginTop:4 }}>
+        {pct >= 100 ? "Looking great — ready to publish!" : "Add more info to sell faster"}
+      </div>
+    </div>
+  );
+};
+
+const BottomFixed = ({ children }) => (
+  <div style={{ background:"#fff", boxShadow:"0 -4px 15px rgba(10,19,49,0.12)", padding:"16px", paddingBottom:"20px", flexShrink:0, display:"flex", flexDirection:"column", gap:12 }}>
+    {children}
+  </div>
+);
+
+const GreenBtn = ({ label, outlined, onClick, disabled, loading }) => (
+  <button onClick={disabled || loading ? undefined : onClick} disabled={disabled || loading} style={{
+    width:"100%", height:48, borderRadius:9999,
+    background: disabled ? "#F0F2F7" : outlined ? "transparent" : "#22CA46",
+    border: outlined ? "1.5px solid #22CA46" : "none",
+    fontFamily:"'Ubuntu',sans-serif", fontSize:16, fontWeight:500,
+    color: disabled ? "#A1A8BD" : outlined ? "#22CA46" : "#fff",
+    cursor: disabled||loading ? "not-allowed" : "pointer",
+    display:"flex", alignItems:"center", justifyContent:"center", gap:8,
+    transition:"background 0.15s",
+  }}>
+    {loading && <div style={{ width:18, height:18, borderRadius:"50%", border:"2px solid currentColor", borderTopColor:"transparent", animation:"spin 0.8s linear infinite" }} />}
+    {label}
+  </button>
+);
+
+const SectionDivider = () => <div style={{ height:12, background:"#F0F2F7", flexShrink:0 }} />;
+
+const FieldBlock = ({ label, children }) => (
+  <div style={{ background:"#fff", padding:"16px", flexShrink:0 }}>
+    {label && <div style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:16, fontWeight:700, color:"#0A1331", marginBottom:12 }}>{label}</div>}
+    {children}
+  </div>
+);
+
+const FieldInput = ({ value, onChange, placeholder, type="text", error, leftIcon, onBlur, autoComplete, inputMode }) => {
+  const [focused, setFocused] = React.useState(false);
+  const borderColor = error ? "#EE374F" : focused ? "#22CA46" : "#D9DDE7";
+  return (
+    <div style={{ height:48, borderRadius:8, border:`1.5px solid ${borderColor}`, background:"#fff", padding:"0 12px", display:"flex", alignItems:"center", gap:8, transition:"border-color 0.15s" }}>
+      {leftIcon && <div style={{ flexShrink:0, display:"flex" }}>{leftIcon}</div>}
+      <input type={type} value={value} onChange={e => onChange(e.target.value)}
+        onFocus={() => setFocused(true)} onBlur={e => { setFocused(false); onBlur?.(e.target.value); }}
+        placeholder={placeholder} autoComplete={autoComplete} inputMode={inputMode}
+        style={{ flex:1, border:"none", outline:"none", background:"transparent", fontFamily:"'Ubuntu',sans-serif", fontSize:16, color:"#0A1331", minWidth:0 }} />
+    </div>
+  );
+};
+
+const FieldError = ({ children }) => children ? (
+  <div role="alert" style={{ display:"flex", alignItems:"center", gap:6, marginTop:6 }}>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#EE374F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <span style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:12, color:"#EE374F" }}>{children}</span>
+  </div>
+) : null;
+
+const FieldHint = ({ children }) => children ? (
+  <div style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:12, color:"#737D9B", marginTop:6 }}>{children}</div>
+) : null;
+
+const PhotoStrip = ({ photos = 3 }) => (
+  <div style={{ display:"flex", gap:1, padding:"16px", background:"#fff", flexShrink:0, alignItems:"flex-start" }}>
+    <div style={{ width:93, height:93, borderRadius:6, background:"linear-gradient(135deg,#DBEAFE,#EFF6FF)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(10,19,49,0.25)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+    </div>
+    <div style={{ display:"flex", flexDirection:"column", gap:1, marginLeft:1, flex:1 }}>
+      {[0,1].map(ri => (
+        <div key={ri} style={{ display:"flex", gap:1 }}>
+          {[0,1,2].map(ci => {
+            const idx = ri*3+ci+1;
+            const filled = idx < photos;
+            const isAddBtn = idx === photos;
+            return (
+              <div key={ci} style={{ flex:1, height:46, borderRadius:6, background: filled ? "linear-gradient(135deg,#DBEAFE,#EFF6FF)" : "#F0F2F7", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                {isAddBtn ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A1A8BD" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                : filled ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(10,19,49,0.2)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> : null}
+              </div>
+            );
+          })}
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+Object.assign(window, { NavBar, ProgressBar, BottomFixed, GreenBtn, SectionDivider, FieldBlock, FieldInput, FieldError, FieldHint, PhotoStrip });
+  </script>
+
+  <!-- ─── screens-photo ────────────────────────────────────────────── -->
+  <script type="text/babel">
+const StepPhotoDesc = ({ onNext, onClose, state, setState }) => {
+  const { photos, photoDescription, aiDetecting, aiDone } = state;
+
+  const handleAddPhoto = () => {
+    if (photos >= 8) return;
+    setState(s => ({ ...s, photos: s.photos + 1, aiDetecting: s.photos === 0, aiDone: s.photos > 0 ? s.aiDone : false }));
+    if (photos === 0) {
+      setTimeout(() => setState(s => ({ ...s, aiDetecting: false, aiDone: true })), 1400);
+    }
+  };
+
+  const photoSlots = [0,1,2,3];
+  const emptySlots = [0,1,2,3];
+
+  return (
+    <>
+      <NavBar title="Ad publication" onClose={onClose} />
+      <div style={{ flex:1, overflowY:"auto", background:"#fff" }}>
+        {/* Segment control */}
+        <div style={{ padding:"10px 16px 10px", background:"#fff", borderBottom:"1px solid #F0F2F7" }}>
+          <div style={{ display:"flex", background:"#F0F2F7", borderRadius:10, padding:3 }}>
+            {[
+              { label:"Single", icon:<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> },
+              { label:"Multiple", icon:<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="9" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg> },
+            ].map((tab, i) => {
+              const active = i === 0;
+              return (
+                <button key={tab.label} style={{ flex:1, height:38, borderRadius:8, border:"none", background: active ? "#fff" : "transparent", boxShadow: active ? "0 1px 3px rgba(10,19,49,0.12), 0 0 0 0.5px rgba(10,19,49,0.06)" : "none", fontFamily:"'Ubuntu',sans-serif", fontSize:14, fontWeight: active ? 500 : 400, color: active ? "#0A1331" : "#737D9B", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:6, transition:"background 0.15s" }}>
+                  {tab.icon}{tab.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Photo grid */}
+        <div style={{ padding:"8px 16px 16px", background:"#fff" }}>
+          <div style={{ display:"flex", gap:1, marginBottom:1 }}>
+            <div onClick={handleAddPhoto} style={{ width:82, height:82, borderRadius:6, background: photos > 0 ? "linear-gradient(135deg,#DBEAFE,#EFF6FF)" : "#F0F2F7", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:4, cursor:"pointer", position:"relative", flexShrink:0 }}>
+              {photos > 0 ? (
+                <>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(10,19,49,0.25)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  {aiDone && <div style={{ position:"absolute", bottom:4, left:4, background:"#0B78E3", color:"#fff", fontFamily:"'Caveat',cursive", fontSize:10, fontWeight:700, borderRadius:9999, padding:"1px 6px" }}>AI ✓</div>}
+                </>
+              ) : (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A1A8BD" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              )}
+            </div>
+            {photoSlots.map(i => {
+              const filled = photos >= i + 2;
+              const isNext = photos === i + 1;
+              return (
+                <div key={i} onClick={isNext ? handleAddPhoto : undefined} style={{ flex:1, height:82, borderRadius:6, background: filled ? "linear-gradient(135deg,#DBEAFE,#EFF6FF)" : "#F0F2F7", display:"flex", alignItems:"center", justifyContent:"center", cursor: isNext ? "pointer" : "default" }}>
+                  {filled && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(10,19,49,0.2)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>}
+                  {isNext && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A1A8BD" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>}
+                </div>
+              );
+            })}
+          </div>
+          <div style={{ display:"flex", gap:1 }}>
+            {emptySlots.map(i => <div key={i} style={{ flex:1, height:82, borderRadius:6, background:"#F0F2F7" }} />)}
+            <div style={{ width:82, height:82, borderRadius:6, background:"#F0F2F7", flexShrink:0 }} />
+          </div>
+        </div>
+
+        {aiDetecting && (
+          <div style={{ margin:"0 16px 12px", background:"#E6F1FC", borderRadius:10, padding:"10px 14px", display:"flex", alignItems:"center", gap:8 }}>
+            <div style={{ width:16, height:16, borderRadius:"50%", border:"2px solid #0B78E3", borderTopColor:"transparent", animation:"spin 0.8s linear infinite", flexShrink:0 }} />
+            <span style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:13, color:"#0B78E3" }}>AI is detecting category…</span>
+          </div>
+        )}
+        {aiDone && (
+          <div style={{ margin:"0 16px 12px", background:"#E6F1FC", borderRadius:10, padding:"10px 14px" }}>
+            <div style={{ fontFamily:"'Caveat',cursive", fontSize:13, fontWeight:700, color:"#0B78E3", marginBottom:3 }}>AI detected</div>
+            <div style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:13, color:"#0A1331", fontWeight:500 }}>Electronics · Smartphone · iPhone</div>
+            <div style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:12, color:"#737D9B", marginTop:2 }}>Category and description auto-filled</div>
+          </div>
+        )}
+
+        <div style={{ padding:"0 16px 8px", background:"#fff" }}>
+          <div style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:20, fontWeight:700, color:"#0A1331", marginBottom:12 }}>Selected photos</div>
+          <div style={{ display:"flex", gap:1 }}>
+            {[0,1,2,3,4,5,6].map(i => (
+              <div key={i} style={{ flex:1, height:46, borderRadius:6, background: i < photos ? "linear-gradient(135deg,#DBEAFE,#EFF6FF)" : "#F0F2F7", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                {i < photos && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(10,19,49,0.2)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ padding:"16px", background:"#fff", marginTop:8 }}>
+          <div style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:20, fontWeight:700, color:"#0A1331", marginBottom:8 }}>Ad description or hint for AI</div>
+          <textarea value={photoDescription} onChange={e => setState(s => ({ ...s, photoDescription: e.target.value }))}
+            placeholder={'Add description if filling manually\nor\ntell AI how to describe it'}
+            rows={4} style={{ width:"100%", borderRadius:8, border:"1.5px solid #D9DDE7", padding:"12px", fontFamily:"'Ubuntu',sans-serif", fontSize:16, color:"#0A1331", resize:"none", outline:"none", boxSizing:"border-box", lineHeight:1.5 }} />
+          <div style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:10, color:"#A1A8BD", textAlign:"right", marginTop:2 }}>{photoDescription.length}/6000</div>
+        </div>
+        <div style={{ height:40 }} />
+      </div>
+
+      <BottomFixed>
+        <GreenBtn label="Create ad with AI" onClick={() => onNext("ai")} />
+        <GreenBtn label="Fill ad manually" outlined onClick={() => onNext("manual")} />
+      </BottomFixed>
+    </>
+  );
+};
+
+Object.assign(window, { StepPhotoDesc });
+  </script>
+
+  <!-- ─── screens-form ─────────────────────────────────────────────── -->
+  <script type="text/babel">
+const validateEmail = v => {
+  if (!v || !v.trim()) return null;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? null : "Enter a valid email address";
+};
+const validatePhone = v => {
+  if (!v || !v.trim()) return "Add a phone number so buyers can reach you";
+  return v.replace(/\D/g,"").length < 9 ? "Phone must be at least 9 digits" : null;
+};
+
+const StepYourAd = ({ onNext, onBack, onClose, state, setState, tweaks }) => {
+  const [errors, setErrors] = React.useState({});
+  const [submitted, setSubmitted] = React.useState(false);
+  const setField = (key, val) => setState(s => ({ ...s, [key]: val }));
+
+  const completeness = React.useMemo(() => {
+    let pct = 20;
+    if (state.description.trim()) pct += 15;
+    if (state.category) pct += 25;
+    if (state.price) pct += 15;
+    if (state.phone.replace(/\D/g,"").length >= 9) pct += 15;
+    if (state.email && !validateEmail(state.email)) pct += 5;
+    if (state.address) pct += 5;
+    return Math.min(pct, 100);
+  }, [state]);
+
+  const handleCategoryTap = () => setField("category", { main:"Транспорт", sub:"Продажа авто", brand:"Toyota" });
+
+  const handlePublish = () => {
+    setSubmitted(true);
+    const newErrors = {
+      email: validateEmail(state.email),
+      phone: validatePhone(state.phone),
+      category: state.category ? null : "Select a category to continue",
+    };
+    if (tweaks.emailRequired && !state.email?.trim()) newErrors.email = "Add an email to receive responses";
+    setErrors(newErrors);
+    if (!Object.values(newErrors).some(Boolean)) onNext();
+  };
+
+  return (
+    <>
+      <NavBar title="Your ad" onBack={onBack} />
+      <ProgressBar pct={completeness} />
+      <div style={{ flex:1, overflowY:"auto", background:"#F0F2F7" }}>
+        <PhotoStrip photos={state.photos} />
+        <SectionDivider />
+
+        <FieldBlock label="Description">
+          <textarea value={state.description} onChange={e => setField("description", e.target.value)}
+            placeholder="Tell buyers about your item" rows={3}
+            style={{ width:"100%", borderRadius:8, border:"1.5px solid #D9DDE7", padding:"12px", fontFamily:"'Ubuntu',sans-serif", fontSize:16, color:"#0A1331", resize:"none", outline:"none", boxSizing:"border-box", lineHeight:1.5 }} />
+          <div style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:10, color:"#A1A8BD", textAlign:"right", marginTop:2 }}>{state.description.length}/1000</div>
+        </FieldBlock>
+
+        <SectionDivider />
+
+        <FieldBlock label="Parameters">
+          {state.category ? (
+            <>
+              <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:16 }}>
+                {[state.category.main, state.category.sub, state.category.brand].map(chip => (
+                  <span key={chip} style={{ background:"#22CA46", color:"#fff", borderRadius:9999, padding:"4px 12px", fontFamily:"'Ubuntu',sans-serif", fontSize:13, fontWeight:500 }}>{chip}</span>
+                ))}
+              </div>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"12px 10px" }}>
+                {[
+                  {label:"Parameter",required:true,value:"Value"},
+                  {label:"Parameter",required:true,value:"Value"},
+                  {label:"Parameter",required:true,value:"Value"},
+                  {label:"Parameter",required:false,value:null},
+                  {label:"Parameter",required:false,value:"Used"},
+                  {label:"Parameter",required:false,value:null},
+                  {label:"Parameter",required:false,value:null},
+                  {label:"Parameter",required:false,value:null},
+                ].map((param,i) => (
+                  <div key={i}>
+                    <div style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:12, fontWeight:700, color:"#0A1331", marginBottom:4 }}>
+                      {param.label}{param.required && <span style={{ color:"#EE374F" }}>*</span>}
+                    </div>
+                    <div style={{ height:44, borderRadius:8, border:"1.5px solid #D9DDE7", background:"#fff", padding:"0 10px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                      <span style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:14, color: param.value ? "#0A1331" : "#A1A8BD", flex:1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{param.value || "Select"}</span>
+                      {param.value
+                        ? <div style={{ width:20, height:20, borderRadius:"50%", background:"#A1A8BD", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, cursor:"pointer" }}><svg width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><line x1="2" y1="2" x2="8" y2="8"/><line x1="8" y1="2" x2="2" y2="8"/></svg></div>
+                        : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A1A8BD" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><polyline points="6 9 12 15 18 9"/></svg>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", height:32 }}>
+              <span style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:14, color: submitted && !state.category ? "#EE374F" : "#0A1331" }}>
+                {submitted && !state.category ? errors.category : "Select a category"}<span style={{ color:"#EE374F" }}>*</span>
+              </span>
+              <button onClick={handleCategoryTap} style={{ height:32, padding:"0 16px", borderRadius:9999, border:"1.5px solid #22CA46", background:"none", fontFamily:"'Ubuntu',sans-serif", fontSize:14, fontWeight:500, color:"#22CA46", cursor:"pointer" }}>Select</button>
+            </div>
+          )}
+        </FieldBlock>
+
+        <SectionDivider />
+
+        <div style={{ background:"#fff", padding:"16px", flexShrink:0 }}>
+          <div style={{ display:"flex", gap:12 }}>
+            <div style={{ flex:1, minWidth:0 }}>
+              <div style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:16, fontWeight:700, color:"#0A1331", marginBottom:8 }}>Price</div>
+              <div style={{ height:48, borderRadius:8, border:"1.5px solid #D9DDE7", background:"#fff", padding:"0 12px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                <input value={state.price} onChange={e => setField("price", e.target.value.replace(/\D/g,""))}
+                  placeholder="0" inputMode="numeric"
+                  style={{ flex:1, border:"none", outline:"none", fontFamily:"'Ubuntu',sans-serif", fontSize:16, color:"#0A1331", background:"transparent", minWidth:0 }} />
+                {state.price && <button onClick={() => setField("price","")} style={{ width:18, height:18, borderRadius:"50%", background:"#A1A8BD", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, padding:0 }}>
+                  <svg width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><line x1="2" y1="2" x2="8" y2="8"/><line x1="8" y1="2" x2="2" y2="8"/></svg>
+                </button>}
+              </div>
+            </div>
+            <div style={{ flex:1, minWidth:0 }}>
+              <div style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:16, fontWeight:700, color:"#0A1331", marginBottom:8 }}>Currency</div>
+              <div style={{ display:"flex", gap:16, alignItems:"center", height:48 }}>
+                {["KGS","USD"].map(c => (
+                  <label key={c} onClick={() => setField("currency",c)} style={{ display:"flex", alignItems:"center", gap:6, cursor:"pointer" }}>
+                    <div style={{ width:22, height:22, borderRadius:"50%", flexShrink:0, border:`2px solid ${state.currency===c ? "#22CA46" : "#D9DDE7"}`, display:"flex", alignItems:"center", justifyContent:"center", transition:"border-color 0.15s" }}>
+                      {state.currency===c && <div style={{ width:12, height:12, borderRadius:"50%", background:"#22CA46" }} />}
+                    </div>
+                    <span style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:16, color:"#0A1331", whiteSpace:"nowrap" }}>{c}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div style={{ display:"flex", alignItems:"center", gap:8, marginTop:12, cursor:"pointer" }} onClick={() => setField("negotiable", !state.negotiable)}>
+            <div style={{ width:20, height:20, borderRadius:4, flexShrink:0, border:`1.5px solid ${state.negotiable ? "#22CA46" : "#D9DDE7"}`, background: state.negotiable ? "#22CA46" : "#fff", display:"flex", alignItems:"center", justifyContent:"center", transition:"background 0.15s, border-color 0.15s" }}>
+              {state.negotiable && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
+            </div>
+            <span style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:14, color:"#0A1331" }}>Price is negotiable</span>
+          </div>
+        </div>
+
+        <SectionDivider />
+
+        <FieldBlock label="Contact">
+          <div style={{ marginBottom:16 }}>
+            <div style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:12, fontWeight:700, color:"#0A1331", marginBottom:6 }}>Phone number<span style={{ color:"#EE374F" }}>*</span></div>
+            <FieldInput value={state.phone} onChange={v => setField("phone",v)}
+              onBlur={v => setErrors(e => ({ ...e, phone: validatePhone(v) }))}
+              placeholder="+996 123 456 789" type="tel" inputMode="tel" autoComplete="tel" error={errors.phone}
+              leftIcon={<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A1A8BD" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.08 6.08l.97-.97a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>} />
+            <FieldError>{errors.phone}</FieldError>
+            <div style={{ display:"flex", alignItems:"center", gap:8, marginTop:10, cursor:"pointer" }} onClick={() => setField("hidePhone", !state.hidePhone)}>
+              <div style={{ width:20, height:20, borderRadius:4, border:`1.5px solid ${state.hidePhone ? "#22CA46" : "#D9DDE7"}`, background: state.hidePhone ? "#22CA46" : "#fff", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                {state.hidePhone && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
+              </div>
+              <span style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:14, color:"#737D9B" }}>Hide phone number</span>
+            </div>
+          </div>
+          <div>
+            <div style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:12, fontWeight:700, color:"#0A1331", marginBottom:6, display:"flex", alignItems:"center", gap:6 }}>
+              Email
+              {tweaks.emailRequired ? <span style={{ color:"#EE374F" }}>*</span> : <span style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:11, fontWeight:400, color:"#737D9B" }}>(optional)</span>}
+            </div>
+            <FieldInput value={state.email} onChange={v => { setField("email",v); if (errors.email && !validateEmail(v)) setErrors(e => ({ ...e, email:null })); }}
+              onBlur={v => setErrors(e => ({ ...e, email: validateEmail(v) || (tweaks.emailRequired && !v.trim() ? "Add an email to receive responses" : null) }))}
+              placeholder="your@email.com" type="email" inputMode="email" autoComplete="email" error={errors.email}
+              leftIcon={<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A1A8BD" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>} />
+            <FieldError>{errors.email}</FieldError>
+            {!errors.email && tweaks.showEmailHint && <FieldHint>Get notified about responses, even when you're offline</FieldHint>}
+          </div>
+        </FieldBlock>
+
+        <SectionDivider />
+
+        <FieldBlock label="Address">
+          <div style={{ height:48, borderRadius:8, border:"1.5px solid #D9DDE7", background:"#fff", padding:"0 12px", display:"flex", alignItems:"center", justifyContent:"space-between", cursor:"pointer" }}>
+            <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22CA46" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:16, color:"#0A1331" }}>{state.address}</span>
+            </div>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A1A8BD" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </div>
+          <div style={{ height:130, borderRadius:10, background:"linear-gradient(135deg,#D1FAE5,#E6F1FC)", marginTop:8, display:"flex", alignItems:"center", justifyContent:"center", overflow:"hidden", position:"relative" }}>
+            <div style={{ position:"absolute", inset:0, opacity:0.3, backgroundImage:"repeating-linear-gradient(0deg,#A1A8BD 0,#A1A8BD 1px,transparent 1px,transparent 32px),repeating-linear-gradient(90deg,#A1A8BD 0,#A1A8BD 1px,transparent 1px,transparent 32px)" }} />
+            <svg width="28" height="36" viewBox="0 0 28 36" fill="none" style={{ position:"relative" }}>
+              <path d="M14 0C6.268 0 0 6.268 0 14c0 10.5 14 22 14 22S28 24.5 28 14C28 6.268 21.732 0 14 0z" fill="#EE374F"/>
+              <circle cx="14" cy="14" r="5" fill="#fff"/>
+            </svg>
+          </div>
+        </FieldBlock>
+
+        <div style={{ height:32 }} />
+      </div>
+
+      <BottomFixed>
+        <GreenBtn label="Publish" onClick={handlePublish} />
+      </BottomFixed>
+    </>
+  );
+};
+
+Object.assign(window, { StepYourAd, validateEmail, validatePhone });
+  </script>
+
+  <!-- ─── screens-promo ────────────────────────────────────────────── -->
+  <script type="text/babel">
+const StepPromotion = ({ onNext, onBack, onClose, state, setState }) => {
+  const { budget = 34 } = state;
+  const maxBudget = 100;
+  const isFree = budget === 0;
+  const reachLow  = isFree ? 14  : Math.round(budget * 5.76);
+  const reachHigh = isFree ? 49  : Math.round(budget * 17.3);
+  const perDayLow  = Math.round(reachLow  / 7);
+  const perDayHigh = Math.round(reachHigh / 7);
+  const setBudget = b => setState(s => ({ ...s, budget: b }));
+  const pct = (budget / maxBudget) * 100;
+
+  return (
+    <>
+      <NavBar title="Реклама" onClose={onClose} />
+      <div style={{ flex:1, overflowY:"auto", background:"#fff" }}>
+        <div style={{ padding:"28px 24px 20px", textAlign:"center" }}>
+          <div style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:44, fontWeight:700, color:"#0A1331", lineHeight:1 }}>{reachLow} – {reachHigh}</div>
+          <div style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:14, color:"#737D9B", marginTop:10, lineHeight:1.5 }}>
+            Approximate reach gained fro 7 day Promotion and longer{" "}
+            <span style={{ color:"#22CA46" }}>({perDayLow} – {perDayHigh} per day)</span>
+          </div>
+          <div style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:12, color:"#A1A8BD", marginTop:6, lineHeight:1.5 }}>Reach is calculated on a daily basis depending on the competition in the category</div>
+        </div>
+
+        <div style={{ padding:"4px 16px 8px" }}>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
+            <span style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:16, fontWeight:700, color:"#0A1331" }}>Daily budget</span>
+            <div style={{ display:"flex", alignItems:"center", gap:4 }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A1A8BD" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+              <span style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:12, color:"#A1A8BD" }}>+</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A1A8BD" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <span style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:12, color:"#A1A8BD" }}>VIP</span>
+            </div>
+          </div>
+          <div style={{ position:"relative", height:20, display:"flex", alignItems:"center" }}>
+            <div style={{ position:"absolute", left:0, right:0, height:4, borderRadius:2, background:"#D9DDE7" }} />
+            <div style={{ position:"absolute", left:0, width:`${pct}%`, height:4, borderRadius:2, background:"#0A1331" }} />
+            <input type="range" min={0} max={maxBudget} value={budget} onChange={e => setBudget(Number(e.target.value))}
+              style={{ position:"absolute", width:"100%", opacity:0, cursor:"pointer", height:20, zIndex:2, margin:0 }} />
+            <div style={{ position:"absolute", left:`${pct}%`, transform:"translateX(-50%)", width:22, height:22, borderRadius:"50%", background:"#0A1331", boxShadow:"0 2px 6px rgba(10,19,49,0.25)", pointerEvents:"none" }} />
+          </div>
+          <div style={{ position:"relative", height:28, marginTop:6 }}>
+            <div style={{ position:"absolute", left:`${pct}%`, transform:"translateX(-50%)", background: isFree ? "#F0F2F7" : "#0A1331", color: isFree ? "#737D9B" : "#fff", borderRadius:9999, padding:"4px 10px", fontFamily:"'Ubuntu',sans-serif", fontSize:12, fontWeight:700, whiteSpace:"nowrap" }}>
+              {isFree ? "FREE" : `${budget} KGS`}
+            </div>
+          </div>
+        </div>
+
+        {isFree ? (
+          <div role="alert" style={{ margin:"12px 16px", background:"#FFF8E1", borderRadius:10, padding:"12px 14px", display:"flex", alignItems:"center", gap:10 }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:13, color:"#0A1331" }}>Very few people will see your ad</span>
+          </div>
+        ) : (
+          <div style={{ margin:"12px 16px", background:"#FFF8E1", borderRadius:10, padding:"12px 14px", display:"flex", alignItems:"center", gap:10 }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A1A8BD" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:13, color:"#0A1331" }}>Promotion + VIP will help you close the deal twice as fast</span>
+          </div>
+        )}
+
+        <div style={{ padding:"8px 16px 16px" }}>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"10px 0" }}>
+            <span style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:14, fontWeight:700, color:"#0A1331" }}>Daily budget</span>
+            <span style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:14, fontWeight:700, color:"#0A1331" }}>up to {isFree ? "0" : budget} KGS</span>
+          </div>
+          <div style={{ padding:"4px 0 12px" }}>
+            <span style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:14, color:"#737D9B" }}>Lalafo wallet balance: <strong style={{ color:"#737D9B" }}>1 000 KGS</strong></span>
+          </div>
+          <div style={{ textAlign:"center", padding:"8px 0 4px" }}>
+            <span style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:14, color:"#0B78E3", cursor:"pointer", display:"inline-flex", alignItems:"center", gap:6 }}>
+              <span style={{ width:20, height:20, borderRadius:"50%", background:"#0B78E3", display:"inline-flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              </span>
+              How promotion works
+            </span>
+          </div>
+          <div style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:12, color:"#A1A8BD", textAlign:"center", lineHeight:1.5, padding:"6px 24px 0" }}>You can suspend expenses anytime since promotion started</div>
+        </div>
+        <div style={{ height:32 }} />
+      </div>
+
+      <BottomFixed>
+        <GreenBtn label="Run promotion" onClick={() => onNext("paid")} />
+        {isFree && <GreenBtn label="Post for free" outlined onClick={() => onNext("free")} />}
+      </BottomFixed>
+    </>
+  );
+};
+
+const StepSuccess = ({ onDone, state }) => {
+  const isPaid = state.publishOutcome === "paid";
+  const showWarning = isPaid && state.budget > 30;
+  return (
+    <>
+      <NavBar title="" onClose={onDone} />
+      <div style={{ flex:1, overflowY:"auto", background:"#fff", padding:"16px 24px", display:"flex", flexDirection:"column", alignItems:"center" }}>
+        <div style={{ height:32 }} />
+        <div style={{ width:80, height:80, borderRadius:"50%", background:"#E7F9EE", display:"flex", alignItems:"center", justifyContent:"center", marginBottom:20 }}>
+          <div style={{ width:56, height:56, borderRadius:"50%", background:"#22CA46", display:"flex", alignItems:"center", justifyContent:"center" }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        </div>
+        <div style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:18, color:"#737D9B", marginBottom:8 }}>Thank you!</div>
+        <div style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:26, fontWeight:700, color:"#0A1331", textAlign:"center", lineHeight:1.3, marginBottom:8 }}>
+          {isPaid ? "Promotion of your ad is active" : "Your ad is live"}
+        </div>
+        <div style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:14, color:"#737D9B", textAlign:"center", marginBottom:24, lineHeight:1.5 }}>
+          {isPaid ? "Buyers in your area will start seeing it shortly." : "It will appear in search once moderation is complete."}
+        </div>
+        {showWarning && (
+          <div style={{ width:"100%", background:"#FFE9EF", borderRadius:12, padding:"14px 16px", marginBottom:16 }}>
+            <div style={{ display:"flex", gap:8, alignItems:"flex-start" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF5A00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0, marginTop:2 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:13, fontWeight:500, color:"#0A1331", lineHeight:1.5 }}>Daily budget exceeds your auto top-up amount</span>
+            </div>
+            <div style={{ display:"flex", justifyContent:"space-between", marginTop:12, paddingTop:12, borderTop:"1px solid rgba(238,55,79,0.15)" }}>
+              <span style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:13, color:"#737D9B" }}>Total budget per day</span>
+              <span style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:13, fontWeight:700, color:"#0A1331" }}>{state.budget} KGS</span>
+            </div>
+            <div style={{ fontFamily:"'Ubuntu',sans-serif", fontSize:13, color:"#737D9B", marginTop:10, lineHeight:1.5 }}>Raise the auto top-up so your promotion keeps running.</div>
+            <button style={{ marginTop:12, height:36, padding:"0 16px", borderRadius:9999, border:"1.5px solid #D9DDE7", background:"#fff", fontFamily:"'Ubuntu',sans-serif", fontSize:13, fontWeight:500, color:"#0A1331", cursor:"pointer" }}>Go to settings</button>
+          </div>
+        )}
+        <div style={{ flex:1 }} />
+      </div>
+      <BottomFixed>
+        <GreenBtn label="Done" onClick={onDone} />
+      </BottomFixed>
+    </>
+  );
+};
+
+Object.assign(window, { StepPromotion, StepSuccess });
+  </script>
+
+  <!-- ─── app ──────────────────────────────────────────────────────── -->
+  <script type="text/babel">
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "emailRequired": false,
+  "emailPrefilled": true,
+  "showEmailHint": true
+}/*EDITMODE-END*/;
+
+const PREFILLED_EMAIL = "user@gmail.com";
+
+const App = () => {
+  const [t, setT] = useTweaks(TWEAK_DEFAULTS);
+  const [step, setStep] = React.useState(0);
+  const [state, setState] = React.useState({
+    photos:0, photoDescription:"", aiDetecting:false, aiDone:false,
+    description:"", category:null, price:"", currency:"KGS",
+    phone:"+996 123 456 789", hidePhone:false,
+    email: PREFILLED_EMAIL, address:"Bishkek",
+    budget:34, vip:false, publishOutcome:null, negotiable:false,
+  });
+
+  const lastPrefilledRef = React.useRef(t.emailPrefilled);
+  React.useEffect(() => {
+    if (t.emailPrefilled !== lastPrefilledRef.current) {
+      lastPrefilledRef.current = t.emailPrefilled;
+      setState(s => ({ ...s, email: t.emailPrefilled ? (s.email || PREFILLED_EMAIL) : (s.email === PREFILLED_EMAIL ? "" : s.email) }));
+    }
+  }, [t.emailPrefilled]);
+
+  const goNext = outcome => {
+    if (step === 2) setState(s => ({ ...s, publishOutcome: outcome || "paid" }));
+    setStep(s => Math.min(s+1, 3));
+  };
+  const goBack = () => setStep(s => Math.max(s-1, 0));
+  const restart = () => {
+    setStep(0);
+    setState({ photos:0, photoDescription:"", aiDetecting:false, aiDone:false, description:"", category:null, price:"", currency:"KGS", phone:"+996 123 456 789", hidePhone:false, email: t.emailPrefilled ? PREFILLED_EMAIL : "", address:"Bishkek", budget:34, vip:false, publishOutcome:null, negotiable:false });
+  };
+
+  const screen = (() => {
+    switch(step) {
+      case 0: return <StepPhotoDesc onNext={() => setStep(1)} onClose={restart} state={state} setState={setState} />;
+      case 1: return <StepYourAd onNext={() => setStep(2)} onBack={goBack} state={state} setState={setState} tweaks={t} />;
+      case 2: return <StepPromotion onNext={goNext} onBack={goBack} onClose={restart} state={state} setState={setState} />;
+      case 3: return <StepSuccess onDone={restart} state={state} />;
+      default: return null;
+    }
+  })();
+
+  return (
+    <div style={{ minHeight:"100vh", background:"#F0F2F7", display:"flex", alignItems:"center", justifyContent:"center", padding:"32px 16px", fontFamily:"'Ubuntu',sans-serif" }}>
+      {/* iPhone frame */}
+      <div style={{ width:390, height:844, borderRadius:48, overflow:"hidden", position:"relative", background:"#fff", boxShadow:"0 40px 80px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.12)" }}>
+        {/* Dynamic island */}
+        <div style={{ position:"absolute", top:11, left:"50%", transform:"translateX(-50%)", width:126, height:37, borderRadius:24, background:"#000", zIndex:50 }} />
+        {/* Status bar */}
+        <div style={{ position:"absolute", top:0, left:0, right:0, zIndex:10, height:50, display:"flex", alignItems:"center", justifyContent:"space-between", padding:"16px 32px 0", pointerEvents:"none" }}>
+          <span style={{ fontFamily:"-apple-system,system-ui,sans-serif", fontSize:15, fontWeight:600, color:"#000" }}>9:41</span>
+          <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+            <svg width="16" height="11" viewBox="0 0 18 12" fill="#000"><rect x="0" y="8" width="3" height="4" rx="0.5"/><rect x="5" y="5" width="3" height="7" rx="0.5"/><rect x="10" y="2" width="3" height="10" rx="0.5"/><rect x="15" y="0" width="3" height="12" rx="0.5"/></svg>
+            <svg width="15" height="11" viewBox="0 0 15 11" fill="#000"><path d="M7.5 0a12 12 0 0 1 7.5 2.6l-1.5 1.5a10 10 0 0 0-12 0L0 2.6A12 12 0 0 1 7.5 0Zm0 4a8 8 0 0 1 4.7 1.6l-1.5 1.5a6 6 0 0 0-6.4 0L2.8 5.6A8 8 0 0 1 7.5 4Zm0 4a4 4 0 0 1 2.3 0.8l-2.3 2.3-2.3-2.3A4 4 0 0 1 7.5 8Z"/></svg>
+            <div style={{ width:24, height:11, border:"1.2px solid #000", borderRadius:2.5, position:"relative", padding:1, display:"flex" }}>
+              <div style={{ flex:1, background:"#000", borderRadius:1.5 }} />
+              <div style={{ position:"absolute", right:-3, top:3, width:1.5, height:5, background:"rgba(0,0,0,0.4)", borderRadius:1 }} />
+            </div>
+          </div>
+        </div>
+        {/* App content */}
+        <div style={{ paddingTop:47, height:"100%", display:"flex", flexDirection:"column", boxSizing:"border-box" }}>
+          {screen}
+        </div>
+        {/* Home indicator */}
+        <div style={{ position:"absolute", bottom:0, left:0, right:0, zIndex:60, height:34, display:"flex", justifyContent:"center", alignItems:"flex-end", paddingBottom:8, pointerEvents:"none" }}>
+          <div style={{ width:139, height:5, borderRadius:100, background:"rgba(0,0,0,0.85)" }} />
+        </div>
+      </div>
+
+      {/* Step indicator */}
+      <div style={{ position:"fixed", top:16, left:16, padding:"8px 14px", background:"#fff", borderRadius:9999, boxShadow:"0 4px 15px rgba(10,19,49,0.12)", fontFamily:"'Ubuntu',sans-serif", fontSize:13, color:"#737D9B", display:"flex", alignItems:"center", gap:8 }}>
+        <span style={{ color:"#0A1331", fontWeight:700 }}>Step {step+1}/4</span>
+        <span>·</span>
+        <span>{["Photo & description","Your ad","Promotion","Success"][step]}</span>
+      </div>
+
+      <TweaksPanel title="Email field tweaks">
+        <TweakSection label="Email field">
+          <TweakToggle label="Required" value={t.emailRequired} onChange={v => setT("emailRequired",v)} />
+          <TweakToggle label="Prefill from profile" value={t.emailPrefilled} onChange={v => setT("emailPrefilled",v)} />
+          <TweakToggle label="Show helper hint" value={t.showEmailHint} onChange={v => setT("showEmailHint",v)} />
+        </TweakSection>
+        <TweakSection label="Flow">
+          <TweakButton label="Restart flow" onClick={restart} />
+          <TweakButton label="Skip to form" onClick={() => setStep(1)} secondary />
+          <TweakButton label="Skip to promotion" onClick={() => setStep(2)} secondary />
+          <TweakButton label="Skip to success" onClick={() => { setState(s => ({ ...s, publishOutcome:"paid", budget:34 })); setStep(3); }} secondary />
+        </TweakSection>
+      </TweaksPanel>
+    </div>
+  );
+};
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);
+  </script>
 </body>
 </html>
